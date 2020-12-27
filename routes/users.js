@@ -7,8 +7,10 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: '../.env' });
 
 
+
+
 //@route post api/users
-// @desc Register user
+//@desc Register user
 //@access Public
 
 router.post('/', [body('email', 'Please enter valid email').isEmail(), body('name', 'Name is required field').not().isEmpty(), body('password', 'Password should be 5+ character').isLength({ min: 5 })], async (req, res) => {
@@ -19,7 +21,7 @@ router.post('/', [body('email', 'Please enter valid email').isEmail(), body('nam
     //now after validation
     const { name, email, password } = req.body;
     try {
-        let user = await User.findOne({ email: email });
+        let user = await UserModel.findOne({ email: email });
         if (user) {
             return res.status(400).json({ "message": "User already exists" });
         }
