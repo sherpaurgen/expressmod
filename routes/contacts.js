@@ -24,14 +24,14 @@ router.get('/', authmiddleware, async (req, res) => {
 //@access private
 //validation examples https://www.freecodecamp.org/news/how-to-make-input-validation-simple-and-clean-in-your-express-js-app-ea9b5ff5a8a7/
 
-router.post('/', [authmiddleware, [body('name', 'Name is required').not().isEmpty(), body('email', 'Invalid email').isEmail(), body('phone').optional().isLength({ min: 10 }), body('type').optional().isIn(['personal', 'public'])]], async (req, res) => {
+router.post('/', [authmiddleware, [body('name', 'Name is required').not().isEmpty(), body('email', 'Invalid email').isEmail(), body('phone').optional().isLength({ min: 10 }), body('contactType').optional().isIn(['personal', 'public'])]], async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
     }
-    const { name, email, phone, type } = req.body;
+    const { name, email, phone, contactType } = req.body;
     try {
-        const usercontact = new UserContact({ name: name, email: email, phone: phone, type: type, user: req.user.id })
+        const usercontact = new UserContact({ name: name, email: email, phone: phone, contactType: contactType, user: req.user.id })
         //above req.user.id is set by auth.js routes
         const contact = await usercontact.save();
         res.json(contact)
@@ -48,14 +48,14 @@ router.post('/', [authmiddleware, [body('name', 'Name is required').not().isEmpt
 //@route put api/contacts/:id
 router.put('/:id', authmiddleware, async (req, res) => {
 
-    const { name, email, phone, type } = req.body;
+    const { name, email, phone, contactType } = req.body;
 
     //build contact object
     const contactFields = {}
     if (name) contactFields.name = name
     if (email) contactFields.email = email
     if (phone) contactFields.phone = phone
-    if (type) contactFields.type = type
+    if (contactType) contactFields.contactType = contactType
 
     try {
         let contact = await UserContact.findById(req.params.id)
