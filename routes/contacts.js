@@ -78,7 +78,25 @@ router.put('/:id', authmiddleware, async (req, res) => {
     }
 })
 
+router.delete('/:id', authmiddleware, async (req, res) => {
+    try {
+        let contact = await UserContact.findById(req.params.id)
+        if (!contact) return res.status(404).json({ "msg": "contact not found" })
+        //authorized user can only update contacts
+        //if authmiddleware is not imported /used the req.user.id wont be defined leading to error Cannot read property 'id' of undefined
+        console.log(contact.user.toString())
+        console.log(req.user.id)
 
+        if (contact.user.toString() !== req.user.id) {
+            return res.status(401).jsong({ "msg": "Not authorized" })
+        }
+        contact = await UserContact.findByIdAndRemove(req.params.id)
+        res.json({ "msg": "contact removed" })
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error while updating user contact')
+    }
+})
 
 
 
