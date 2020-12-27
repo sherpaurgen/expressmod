@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.pluralize(null); //this will prevent default pluralize collection name eg. user -to users
 
 const UserSchema = mongoose.Schema({
     name: {
@@ -21,3 +22,6 @@ const UserSchema = mongoose.Schema({
 });
 
 module.exports = mongoose.model('user', UserSchema)
+
+//collection with name "users"  is saved by default...NOT "user"..
+//const dataSchema = new Schema({..}, { collection: 'data' })

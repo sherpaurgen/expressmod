@@ -28,7 +28,7 @@ router.post('/', [body('email', 'Please enter valid email').isEmail(), body('nam
         user.password = await bcrypt.hash(password, salt);
         await user.save();
         const payload = {
-            user: { id: user._id }
+            user: { id: user.id }
         };
 
         jwt.sign(payload, process.env.jwtsecret, { expiresIn: 36000 }, (err, token) => {
