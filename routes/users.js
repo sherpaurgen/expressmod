@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const User = require('../models/User')
+const UserModel = require('../models/User')
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: '../.env' });
@@ -23,12 +23,12 @@ router.post('/', [body('email', 'Please enter valid email').isEmail(), body('nam
         if (user) {
             return res.status(400).json({ "message": "User already exists" });
         }
-        user = new User({ name: name, email: email, password: password })
+        const userobj = new UserModel({ name: name, email: email, password: password })
         const salt = await bcrypt.genSalt(12);
-        user.password = await bcrypt.hash(password, salt);
-        await user.save();
+        userobj.password = await bcrypt.hash(password, salt);
+        await userobj.save();
         const payload = {
-            user: { id: user.id }
+            user: { id: userobj.id }
         };
 
         jwt.sign(payload, process.env.jwtsecret, { expiresIn: 36000 }, (err, token) => {
