@@ -3,7 +3,9 @@ const router = express.Router();
 const authmiddleware = require('../middleware/auth')
 const { body, validationResult } = require('express-validator');
 require('dotenv').config({ path: '../.env' });
-const UserContact = require('../models/Contact')
+const UserContact = require('../models/Contact');
+
+
 
 //get contact . private route
 router.get('/', authmiddleware, async (req, res) => {
@@ -41,14 +43,39 @@ router.post('/', [authmiddleware, [body('name', 'Name is required').not().isEmpt
 
 })
 
-//@route PUT api/contacts/:id
-router.put('/:id', (req, res) => {
-    res.send('edit update contact')
-})
 
-//@route delete api/contacts/:id
-router.delete('/:id', (req, res) => {
-    res.send('delete  contact')
+
+//@route put api/contacts/:id
+router.put('/:id', authmiddleware, async (req, res) => {
+
+    const { name, email, phone, type } = req.body;
+
+    //build contact object
+    const contactFields = {}
+    if (name) contactFields.name = name
+    if (email) contactFields.email = email
+    if (phone) contactFields.phone = phone
+    if (type) contactFields.type = type
+
+    try {
+        let contact = await UserContact.findById(req.params.id)
+        if (!contact) return res.status(404).json({ "msg": "contact not found" })
+        //authorized user can only update contacts
+        //if authmiddleware is not imported /used the req.user.id wont be defined leading to error Cannot read property 'id' of undefined
+        console.log(contact.user.toString())
+        console.log(req.user.id)
+        if (contact.user.toString() === req.user.id) {
+            console.log("ok true")
+        }
+        if (contact.user.toString() !== req.user.id) {
+            return res.status(401).jsong({ "msg": "Not authorized" })
+        }
+        contact = await UserContact.findByIdAndUpdate(req.params.id, { $set: contactFields }, { new: true })
+        res.json(contact)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error while updating user contact')
+    }
 })
 
 
