@@ -33,7 +33,7 @@ router.post('/', [body('email', 'Please include valid email').isEmail, body('pas
         // compare password hash
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ msg: "Invalid Credentials" })
+            return res.status(400).json({ "msg": "Invalid Credentials" })
         }
         const payload = {
             //user._id is set with code above-- let user = await User.findOne({"email":email})
@@ -42,6 +42,7 @@ router.post('/', [body('email', 'Please include valid email').isEmail, body('pas
 
         jwt.sign(payload, process.env.jwtsecret, { expiresIn: 36000 }, (err, token) => {
             if (err) {
+                //throw statement throws a user-defined exception Execution of the current function will stop (the statements after throw won't be executed), and control will be passed to the first catch block in the call stack. If no catch block exists among caller functions, the program will terminate.
                 throw err;
             }
             res.json({ token: token })
@@ -51,4 +52,7 @@ router.post('/', [body('email', 'Please include valid email').isEmail, body('pas
         console.error(err.message)
         res.status(500).send('Server Error')
     }
-})
+
+}
+)
+module.exports = router

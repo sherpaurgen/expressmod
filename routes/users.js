@@ -26,10 +26,7 @@ router.post('/', [body('email', 'Please enter valid email').isEmail(), body('nam
         user = new User({ name: name, email: email, password: password })
         const salt = await bcrypt.genSalt(12);
         user.password = await bcrypt.hash(password, salt);
-        console.log(user)
-        console.log("--------------------------")
         await user.save();
-        console.log(user)
         const payload = {
             user: { id: user._id }
         };
@@ -40,12 +37,12 @@ router.post('/', [body('email', 'Please enter valid email').isEmail(), body('nam
             }
             res.json({ token: token })
         })
-
-
     } catch (err) {
         console.log(err.message)
         res.status(500).send(err.message)
     }
-})
+}
+)
+
 
 module.exports = router;
